@@ -1,5 +1,5 @@
 {
-  "name": "my-turborepo",
+  "name": "personal-mob-magic",
   "private": true,
   "scripts": {
     "build": "turbo run build",
