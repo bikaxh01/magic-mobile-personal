@@ -1,0 +1,20 @@
+{
+  "name": "primary-backend",
+  "module": "index.ts",
+  "dependencies": {
+    "@repo/db": "*",
+    "@repo/redis": "*",
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.1",
+    "@types/jsonwebtoken": "^9.0.9",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "private": true,
+  "type": "module"
+}
