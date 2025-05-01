@@ -1,9 +1,9 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from './ThemedText';
-import { ThemedView } from './ThemedView';
-import { Todo } from '@/types/todo';
+import { IconSymbol } from './ui/IconSymbol';
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { Todo } from '@/types/Todo';
 
 interface TodoItemProps {
   todo: Todo;
@@ -11,50 +11,53 @@ interface TodoItemProps {
   onDelete: (id: string) => void;
 }
 
-export const TodoItem: React.FC<TodoItemProps> = ({ todo, onToggle, onDelete }) => {
-  const backgroundColor = useThemeColor({}, 'background');
-  const textColor = useThemeColor({}, 'text');
+export function TodoItem({ todo, onToggle, onDelete }: TodoItemProps) {
+  const iconColor = useThemeColor({}, 'icon');
 
   return (
-    <ThemedView style={styles.todoItem}>
-      <TouchableOpacity 
-        style={styles.checkbox} 
+    <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.checkboxContainer}
         onPress={() => onToggle(todo.id)}
-      >
-        <View style={[
-          styles.checkboxInner, 
-          todo.completed && { backgroundColor: '#0a7ea4' }
-        ]} />
+        activeOpacity={0.7}>
+        <View style={[styles.checkbox, todo.completed && styles.checkboxCompleted]}>
+          {todo.completed && (
+            <IconSymbol name="checkmark" size={15} color="#fff" />
+          )}
+        </View>
+        <ThemedText
+          style={[
+            styles.text,
+            todo.completed && styles.completedText
+          ]}>
+          {todo.title}
+        </ThemedText>
       </TouchableOpacity>
       
-      <ThemedText 
-        style={[
-          styles.todoText, 
-          todo.completed && styles.completedText
-        ]}
-      >
-        {todo.text}
-      </ThemedText>
-      
-      <TouchableOpacity 
-        style={styles.deleteButton}
+      <TouchableOpacity
         onPress={() => onDelete(todo.id)}
-      >
-        <ThemedText style={styles.deleteText}>Delete</ThemedText>
+        style={styles.deleteButton}
+        activeOpacity={0.7}>
+        <IconSymbol name="trash" size={20} color={iconColor} />
       </TouchableOpacity>
-    </ThemedView>
+    </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  todoItem: {
+  container: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 15,
-    marginBottom: 10,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#ddd',
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    borderBottomColor: '#ccc',
+    justifyContent: 'space-between',
+  },
+  checkboxContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
   },
   checkbox: {
     width: 24,
@@ -62,31 +65,22 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 2,
     borderColor: '#0a7ea4',
+    marginRight: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
   },
-  checkboxInner: {
-    width: 14,
-    height: 14,
-    borderRadius: 7,
+  checkboxCompleted: {
+    backgroundColor: '#0a7ea4',
   },
-  todoText: {
-    flex: 1,
+  text: {
     fontSize: 16,
+    flex: 1,
   },
   completedText: {
     textDecorationLine: 'line-through',
     opacity: 0.7,
   },
   deleteButton: {
-    backgroundColor: '#ff6b6b',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 5,
-  },
-  deleteText: {
-    color: 'white',
-    fontWeight: '500',
+    padding: 5,
   }
 });

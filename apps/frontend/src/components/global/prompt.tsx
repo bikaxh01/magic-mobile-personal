@@ -10,7 +10,8 @@ import { useRouter } from "next/navigation";
 function Prompt() {
   const [prompt, setPrompt] = useState("");
 
-  const { getToken } = useAuth();
+  const { getToken,userId } = useAuth();
+  console.log("🚀 ~ Prompt ~ userId:", userId)
 
   const router = useRouter();
 

@@ -1,64 +1,67 @@
 import { useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Todo } from '@/types/todo';
+import { Todo } from '@/types/Todo';
 
-const STORAGE_KEY = 'todos_list';
-
-export const useTodos = () => {
+export function useTodos() {
   const [todos, setTodos] = useState<Todo[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const loadTodos = async () => {
-      try {
-        const storedTodos = await AsyncStorage.getItem(STORAGE_KEY);
-        if (storedTodos) {
-          setTodos(JSON.parse(storedTodos));
-        }
-      } catch (error) {
-        console.error('Failed to load todos:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     loadTodos();
   }, []);
 
-  useEffect(() => {
-    const saveTodos = async () => {
-      try {
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
-      } catch (error) {
-        console.error('Failed to save todos:', error);
+  const loadTodos = async () => {
+    try {
+      const storedTodos = await AsyncStorage.getItem('todos');
+      if (storedTodos) {
+        setTodos(JSON.parse(storedTodos));
       }
-    };
-
-    if (!loading) {
-      saveTodos();
+    } catch (error) {
+      console.error('Failed to load todos:', error);
+    } finally {
+      setLoading(false);
     }
-  }, [todos, loading]);
+  };
 
-  const addTodo = (text: string) => {
+  const saveTodos = async (updatedTodos: Todo[]) => {
+    try {
+      await AsyncStorage.setItem('todos', JSON.stringify(updatedTodos));
+    } catch (error) {
+      console.error('Failed to save todos:', error);
+    }
+  };
+
+  const addTodo = (title: string) => {
     const newTodo: Todo = {
       id: Date.now().toString(),
-      text,
+      title,
       completed: false,
+      createdAt: new Date().toISOString(),
     };
-    setTodos([...todos, newTodo]);
+    const updatedTodos = [...todos, newTodo];
+    setTodos(updatedTodos);
+    saveTodos(updatedTodos);
   };
 
   const toggleTodo = (id: string) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
+    const updatedTodos = todos.map(todo => 
+      todo.id === id ? { ...todo, completed: !todo.completed } : todo
     );
+    setTodos(updatedTodos);
+    saveTodos(updatedTodos);
   };
 
   const deleteTodo = (id: string) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
+    const updatedTodos = todos.filter(todo => todo.id !== id);
+    setTodos(updatedTodos);
+    saveTodos(updatedTodos);
   };
 
-  return { todos, loading, addTodo, toggleTodo, deleteTodo };
-};
+  return {
+    todos,
+    loading,
+    addTodo,
+    toggleTodo,
+    deleteTodo
+  };
+}

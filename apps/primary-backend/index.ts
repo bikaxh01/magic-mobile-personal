@@ -20,21 +20,30 @@ app.post(
   "/create-project",
   authMiddleware,
   async (req: Request, res: Response) => {
-    const userId = req.userId;
-
-    const { prompt } = req.body;
-
-    const createProject = await prismaClient.project.create({
-      data: {
-        userId,
-        description: prompt,
-      },
-    });
-
+   try {
+     const userId = req.userId;
+     console.log("🚀 ~ userId:", userId)
+ 
+     const { prompt } = req.body;
+ 
+     const createProject = await prismaClient.project.create({
+       data: {
+         userId,
+         description: prompt,
+       },
+     });
+ 
+     res.json({
+       success: true,
+       data: createProject,
+     });
+   } catch (error) {
+    console.log("🚀 ~ error:", error)
     res.json({
-      success: true,
-      data: createProject,
+      success: false,
+      data: "ERROR",
     });
+   }
   }
 );
 
